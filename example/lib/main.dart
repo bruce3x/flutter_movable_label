@@ -26,6 +26,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Widget _label(String text) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.pink,
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +56,18 @@ class _MyHomePageState extends State<MyHomePage> {
           aspectRatio: 1,
           child: Container(
             color: Colors.indigo,
-            child: MovableLabel(),
+            child: MovableLabel(
+              labels: [
+                Label(
+                  _label('Hello world'),
+                  LabelState(
+                    translation: Offset(0, 0),
+                    scale: 1.0,
+                    rotation: 45,
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
