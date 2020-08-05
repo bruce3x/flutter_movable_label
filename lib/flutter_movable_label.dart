@@ -48,31 +48,40 @@ class _LabelWidgetState extends State<LabelWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onPanStart: (detail) {},
-      onPanUpdate: (details) {
-        state = state.copyWith(translation: state.translation + details.delta);
-        setState(() {});
-      },
-      onPanCancel: () {
-        widget.onStateUpdate?.call(state);
-      },
-      onPanEnd: (detail) {
-        widget.onStateUpdate?.call(state);
-      },
-      child: Align(
-        alignment: Alignment.center,
-        child: Transform.translate(
-          offset: state.translation,
-          child: Transform.scale(
-            scale: state.scale,
-            child: Transform.rotate(
-              angle: state.rotation / 360 * 2 * pi,
-              child: widget.label.widget,
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        return GestureDetector(
+          onPanStart: (detail) {},
+          onPanUpdate: (details) {
+            final offset = state.translation + details.delta;
+            state = state.copyWith(
+                translation: Offset(
+              offset.dx.clamp(-constraints.maxWidth / 2, constraints.maxWidth / 2),
+              offset.dy.clamp(-constraints.maxHeight / 2, constraints.maxHeight / 2),
+            ));
+            setState(() {});
+          },
+          onPanCancel: () {
+            widget.onStateUpdate?.call(state);
+          },
+          onPanEnd: (detail) {
+            widget.onStateUpdate?.call(state);
+          },
+          child: Align(
+            alignment: Alignment.center,
+            child: Transform.translate(
+              offset: state.translation,
+              child: Transform.scale(
+                scale: state.scale,
+                child: Transform.rotate(
+                  angle: state.rotation / 360 * 2 * pi,
+                  child: widget.label.widget,
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
