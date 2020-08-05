@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movable_label/flutter_movable_label.dart';
+import 'package:random_color/random_color.dart';
+import 'package:english_words/english_words.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,10 +28,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  RandomColor _randomColor = RandomColor();
+
   Widget _label(String text) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.pink,
+        color: _randomColor.randomColor(colorHue: ColorHue.blue),
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       child: Padding(
@@ -59,11 +63,27 @@ class _MyHomePageState extends State<MyHomePage> {
             child: MovableLabel(
               labels: [
                 Label(
-                  _label('Hello world'),
+                  _label(generateWordPairs().first.first),
                   LabelState(
                     translation: Offset(0, 0),
                     scale: 1.0,
                     rotation: 45,
+                  ),
+                ),
+                Label(
+                  _label(generateWordPairs().first.first),
+                  LabelState(
+                    translation: Offset(100, 0),
+                    scale: 1.5,
+                    rotation: 90,
+                  ),
+                ),
+                Label(
+                  _label(generateWordPairs().first.first),
+                  LabelState(
+                    translation: Offset(0, 100),
+                    scale: 2.0,
+                    rotation: 30,
                   ),
                 )
               ],

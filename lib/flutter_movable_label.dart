@@ -51,7 +51,6 @@ class _LabelWidgetState extends State<LabelWidget> {
     return GestureDetector(
       onPanStart: (detail) {},
       onPanUpdate: (details) {
-        print('onPanUpdate: ${details.delta}');
         state = state.copyWith(translation: state.translation + details.delta);
         setState(() {});
       },
