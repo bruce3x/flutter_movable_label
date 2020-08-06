@@ -90,11 +90,15 @@ class _LabelWidgetState extends State<LabelWidget> {
             if (startOffset == null) return;
             state = widget.initialState +
                 LabelState(
-                  translation:
-                      clamp(details.focalPoint - startOffset, constraints.maxWidth / 2, constraints.maxHeight / 2),
+                  translation: details.focalPoint - startOffset,
                   scale: details.scale,
                   rotation: (details.rotation / 2 / pi * 360) % 360,
                 );
+
+            state = state.copyWith(
+              translation: clamp(state.translation, constraints.maxWidth / 2, constraints.maxHeight / 2),
+            );
+
             setState(() {});
           },
           onScaleEnd: (details) {
