@@ -30,7 +30,10 @@ class LabelValue<T> {
   final T data;
   final LabelState state;
 
-  const LabelValue({@required this.id, @required this.data, this.state = LabelState.zero});
+  LabelValue({@required this.id, @required this.data, this.state = LabelState.zero}) {
+    assert(id != null);
+    assert(data != null);
+  }
 
   @override
   bool operator ==(Object other) {

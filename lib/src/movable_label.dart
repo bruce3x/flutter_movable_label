@@ -10,7 +10,10 @@ class MovableLabel<T> extends StatefulWidget {
   final LabelController<T> controller;
   final LabelWidgetBuilder<T> builder;
 
-  const MovableLabel({Key key, @required this.controller, @required this.builder}) : super(key: key);
+  MovableLabel({Key key, @required this.controller, @required this.builder}) : super(key: key) {
+    assert(controller != null);
+    assert(builder != null);
+  }
 
   @override
   _MovableLabelState<T> createState() => _MovableLabelState<T>();
