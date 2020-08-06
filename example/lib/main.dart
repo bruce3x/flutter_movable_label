@@ -29,25 +29,22 @@ class LabelCell {
   LabelCell({@required this.text, @required this.color});
 }
 
-class MyHomePage extends StatefulWidget {
+class ColorfulLabel extends StatelessWidget {
+  final LabelCell data;
+
+  const ColorfulLabel({Key key, this.data}) : super(key: key);
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  RandomColor randomColor = RandomColor();
-  final List<LabelCell> cells = [];
-
-  Widget _label(LabelCell cell) {
+  Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: cell.color,
+        color: data.color,
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Text(
-          cell.text,
+          data.text,
           style: TextStyle(
             fontSize: 16,
             color: Colors.white,
@@ -56,6 +53,19 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  RandomColor randomColor = RandomColor();
+
+  LabelController<LabelCell> labelController = LabelController();
+
+  LabelWidgetBuilder<LabelCell> labelBuilder = (context, data) => ColorfulLabel(data: data);
 
   @override
   Widget build(BuildContext context) {
@@ -68,16 +78,21 @@ class _MyHomePageState extends State<MyHomePage> {
           aspectRatio: 1,
           child: Container(
             color: Colors.indigo,
-            child: MovableLabel(
-              labels: List.generate(5, (index) => randomCell()).map((cell) => Label(widget: _label(cell))).toList(),
+            child: MovableLabel<LabelCell>(
+              controller: labelController,
+              builder: labelBuilder,
             ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // this.cells.add(randomCell());
-          // setState(() {});
+          labelController.add(
+            LabelValue(
+              id: DateTime.now().toString(),
+              data: randomCell(),
+            ),
+          );
         },
         child: Icon(Icons.add),
       ),
