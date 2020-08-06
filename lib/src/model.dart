@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
 
+part 'model.g.dart';
+
+@immutable
+@CopyWith()
 class LabelState {
   final Offset translation;
   final double scale;
@@ -8,14 +13,6 @@ class LabelState {
   static const LabelState zero = LabelState();
 
   const LabelState({this.translation = Offset.zero, this.scale = 1, this.rotation = 0});
-
-  LabelState copyWith({Offset translation, double scale, double rotation}) {
-    return LabelState(
-      translation: translation ?? this.translation,
-      scale: scale ?? this.scale,
-      rotation: rotation ?? this.rotation,
-    );
-  }
 
   LabelState operator +(LabelState other) {
     return LabelState(
@@ -26,20 +23,14 @@ class LabelState {
   }
 }
 
+@immutable
+@CopyWith()
 class LabelValue<T> {
   final String id;
   final T data;
   final LabelState state;
 
   const LabelValue({@required this.id, @required this.data, this.state = LabelState.zero});
-
-  LabelValue<T> copyWith({T data, LabelState state}) {
-    return LabelValue(
-      id: this.id,
-      data: data ?? this.data,
-      state: state ?? this.state,
-    );
-  }
 
   @override
   bool operator ==(Object other) {
