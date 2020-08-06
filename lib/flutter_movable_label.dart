@@ -9,7 +9,9 @@ class LabelState {
   final double scale;
   final double rotation;
 
-  LabelState({this.translation = Offset.zero, this.scale = 0, this.rotation = 0});
+  static const LabelState zero = LabelState();
+
+  const LabelState({this.translation = Offset.zero, this.scale = 1, this.rotation = 0});
 
   LabelState copyWith({Offset translation, double scale, double rotation}) {
     return LabelState(
@@ -18,13 +20,21 @@ class LabelState {
       rotation: rotation ?? this.rotation,
     );
   }
+
+  LabelState operator +(LabelState other) {
+    return LabelState(
+      translation: this.translation + other.translation,
+      scale: this.scale * other.scale,
+      rotation: this.rotation + other.rotation,
+    );
+  }
 }
 
 class Label {
   final Widget widget;
   final LabelState state;
 
-  Label(this.widget, this.state);
+  Label({@required this.widget, this.state = LabelState.zero});
 }
 
 class LabelWidget extends StatefulWidget {
@@ -40,6 +50,15 @@ class LabelWidget extends StatefulWidget {
 class _LabelWidgetState extends State<LabelWidget> {
   LabelState state;
 
+  Offset startOffset;
+
+  Offset clamp(Offset offset, double halfWidth, double halfHeight) {
+    return Offset(
+      offset.dx.clamp(-halfWidth, halfWidth),
+      offset.dy.clamp(-halfHeight, halfHeight),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,25 +67,48 @@ class _LabelWidgetState extends State<LabelWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print('Building item $this');
     return LayoutBuilder(
       builder: (_, constraints) {
         return GestureDetector(
-          onPanStart: (detail) {},
-          onPanUpdate: (details) {
-            final offset = state.translation + details.delta;
-            state = state.copyWith(
-                translation: Offset(
-              offset.dx.clamp(-constraints.maxWidth / 2, constraints.maxWidth / 2),
-              offset.dy.clamp(-constraints.maxHeight / 2, constraints.maxHeight / 2),
-            ));
+          // onPanStart: (detail) {},
+          // onPanUpdate: (details) {
+          //   final offset = state.translation + details.delta;
+          //   state = state.copyWith(
+          //       translation: Offset(
+          //     offset.dx.clamp(-constraints.maxWidth / 2, constraints.maxWidth / 2),
+          //     offset.dy.clamp(-constraints.maxHeight / 2, constraints.maxHeight / 2),
+          //   ));
+          //   setState(() {});
+          // },
+          // onPanCancel: () {
+          //   widget.onStateUpdate?.call(state);
+          // },
+          // onPanEnd: (detail) {
+          //   widget.onStateUpdate?.call(state);
+          // },
+
+          onScaleStart: (details) {
+            print('onScaleStart: $details');
+            startOffset = details.focalPoint;
+          },
+          onScaleUpdate: (details) {
+            if (startOffset == null) return;
+            state = widget.label.state +
+                LabelState(
+                  translation:
+                      clamp(details.focalPoint - startOffset, constraints.maxWidth / 2, constraints.maxHeight / 2),
+                  scale: details.scale,
+                  rotation: (details.rotation / 2 / pi * 360) % 360,
+                );
             setState(() {});
           },
-          onPanCancel: () {
+          onScaleEnd: (details) {
+            print('onScaleEnd: $details');
+            startOffset = null;
             widget.onStateUpdate?.call(state);
           },
-          onPanEnd: (detail) {
-            widget.onStateUpdate?.call(state);
-          },
+
           child: Align(
             alignment: Alignment.center,
             child: Transform.translate(
@@ -111,14 +153,15 @@ class _MovableLabelState extends State<MovableLabel> {
         .map((entry) => LabelWidget(
               label: entry.value,
               onStateUpdate: (state) {
-                labels[entry.key] = Label(entry.value.widget, state);
+                labels[entry.key] = Label(widget: entry.value.widget, state: state);
                 setState(() {});
               },
             ))
         .toList();
 
-    return Stack(
-      children: children,
+    print(">>>>> ${widget.labels.length} ${children.length}");
+    return ClipRect(
+      child: Stack(children: children),
     );
   }
 }

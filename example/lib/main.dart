@@ -22,24 +22,32 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class LabelCell {
+  final String text;
+  final Color color;
+
+  LabelCell({@required this.text, @required this.color});
+}
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  RandomColor _randomColor = RandomColor();
+  RandomColor randomColor = RandomColor();
+  final List<LabelCell> cells = [];
 
-  Widget _label(String text) {
+  Widget _label(LabelCell cell) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _randomColor.randomColor(colorHue: ColorHue.blue),
+        color: cell.color,
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(24.0),
         child: Text(
-          text,
+          cell.text,
           style: TextStyle(
             fontSize: 16,
             color: Colors.white,
@@ -61,40 +69,25 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Container(
             color: Colors.indigo,
             child: MovableLabel(
-              labels: [
-                Label(
-                  _label(generateWordPairs().first.first),
-                  LabelState(
-                    translation: Offset(0, 0),
-                    scale: 1.0,
-                    rotation: 45,
-                  ),
-                ),
-                Label(
-                  _label(generateWordPairs().first.first),
-                  LabelState(
-                    translation: Offset(100, 0),
-                    scale: 1.5,
-                    rotation: 90,
-                  ),
-                ),
-                Label(
-                  _label(generateWordPairs().first.first),
-                  LabelState(
-                    translation: Offset(0, 100),
-                    scale: 2.0,
-                    rotation: 30,
-                  ),
-                )
-              ],
+              labels: List.generate(5, (index) => randomCell()).map((cell) => Label(widget: _label(cell))).toList(),
             ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          // this.cells.add(randomCell());
+          // setState(() {});
+        },
         child: Icon(Icons.add),
       ),
+    );
+  }
+
+  LabelCell randomCell() {
+    return LabelCell(
+      text: generateWordPairs().first.asPascalCase,
+      color: randomColor.randomColor(),
     );
   }
 }
