@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movable_label/flutter_movable_label.dart';
 import 'package:random_color/random_color.dart';
 import 'package:english_words/english_words.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   runApp(MyApp());
@@ -89,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           labelController.add(
             LabelValue(
-              id: DateTime.now().toString(),
+              id: Uuid().v4(),
               data: randomCell(),
             ),
           );
