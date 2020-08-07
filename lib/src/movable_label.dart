@@ -7,11 +7,26 @@ import 'package:flutter_movable_label/src/util.dart';
 
 typedef LabelWidgetBuilder<T> = Widget Function(BuildContext context, T data);
 
+typedef MoveLabelStartCallback<T> = void Function(LabelValue<T> label);
+typedef MoveLabelUpdateCallback = LabelState Function(LabelState state, Rect containerBox);
+typedef MoveLabelEndCallback<T> = void Function(LabelValue<T> label);
+
 class MovableLabel<T> extends StatefulWidget {
   final LabelController<T> controller;
   final LabelWidgetBuilder<T> builder;
 
-  MovableLabel({Key key, @required this.controller, @required this.builder}) : super(key: key) {
+  final MoveLabelStartCallback<T> onMoveStart;
+  final MoveLabelUpdateCallback onMoveUpdate;
+  final MoveLabelEndCallback<T> onMoveEnd;
+
+  MovableLabel({
+    Key key,
+    @required this.controller,
+    @required this.builder,
+    this.onMoveStart,
+    this.onMoveUpdate,
+    this.onMoveEnd,
+  }) : super(key: key) {
     assert(controller != null);
     assert(builder != null);
   }
@@ -21,25 +36,71 @@ class MovableLabel<T> extends StatefulWidget {
 }
 
 class _MovableLabelState<T> extends State<MovableLabel<T>> {
+  GlobalKey containerKey = GlobalKey();
   LabelValue<T> moving;
   LabelState initialState;
   Offset initialTouchPosition;
 
   int pointerCount = 0;
 
+  Widget _labels() {
+    return ClipRect(
+      child: ValueListenableBuilder<List<LabelValue<T>>>(
+        valueListenable: widget.controller,
+        builder: (_, value, child) {
+          return Stack(
+            children: value
+                .map(
+                  (label) => Listener(
+                    onPointerDown: (event) => startTouch(label),
+                    child: _LabelWidget(
+                      state: label.state,
+                      child: widget.builder(context, label.data),
+                    ),
+                  ),
+                )
+                .toList(),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _activeLabel() {
+    if (moving == null) return SizedBox.shrink();
+
+    return _LabelWidget(
+      state: moving.state,
+      child: widget.builder(context, moving.data),
+    );
+  }
+
   void startTouch(LabelValue<T> label) {
     if (moving != null) return;
     print('Touching ${label.data}');
     moving = label;
     widget.controller.remove(label);
+    widget.onMoveStart?.call(moving);
     setState(() {});
   }
 
   void finishTouch() {
     if (moving == null) return;
     widget.controller.add(moving);
+    widget.onMoveEnd?.call(moving);
     moving = null;
     setState(() {});
+  }
+
+  LabelState nextState(LabelState adjust) {
+    final state = initialState + adjust;
+    if (widget.onMoveUpdate == null) return state;
+
+    final box = containerKey.currentContext.findRenderObject() as RenderBox;
+    final translation = box.getTransformTo(null).getTranslation();
+    final rect = Rect.fromLTWH(translation.x, translation.y, box.size.width, box.size.height);
+
+    return widget.onMoveUpdate(initialState + adjust, rect);
   }
 
   @override
@@ -64,7 +125,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
             rotation: rad2deg(details.rotation),
           );
 
-          moving = moving.copyWith(state: initialState + adjust);
+          moving = moving.copyWith(state: nextState(adjust));
           setState(() {});
         },
         onScaleEnd: (details) {
@@ -74,27 +135,12 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
             print('Finish touch.. cleanup');
           }
         },
-        child: ClipRect(
-          child: ValueListenableBuilder<List<LabelValue<T>>>(
-            valueListenable: widget.controller,
-            builder: (_, value, child) {
-              List<LabelValue<T>> labels = List.of(value);
-              if (moving != null) labels.add(moving);
-              return Stack(
-                children: labels
-                    .map(
-                      (label) => Listener(
-                        onPointerDown: (event) => startTouch(label),
-                        child: _LabelWidget(
-                          state: label.state,
-                          child: widget.builder(context, label.data),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              );
-            },
-          ),
+        child: Stack(
+          key: containerKey,
+          children: [
+            _labels(),
+            _activeLabel(),
+          ],
         ),
       ),
     );
@@ -106,6 +152,7 @@ class _LabelWidget extends StatelessWidget {
   final Widget child;
 
   const _LabelWidget({Key key, this.state = LabelState.zero, @required this.child}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Align(
