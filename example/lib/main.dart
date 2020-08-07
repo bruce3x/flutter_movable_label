@@ -28,6 +28,11 @@ class LabelCell {
   final Color color;
 
   LabelCell({@required this.text, @required this.color});
+
+  @override
+  String toString() {
+    return "Label($text)";
+  }
 }
 
 class ColorfulLabel extends StatelessWidget {
