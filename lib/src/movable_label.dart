@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_movable_label/src/controller.dart';
 import 'package:flutter_movable_label/src/model.dart';
+import 'package:flutter_movable_label/src/util.dart';
 
 typedef LabelWidgetBuilder<T> = Widget Function(BuildContext context, T data);
 
@@ -83,7 +84,7 @@ class _LabelWidgetState extends State<_LabelWidget> {
             final stateDiff = LabelState(
               translation: details.focalPoint - startOffset,
               scale: details.scale,
-              rotation: (details.rotation / 2 / pi * 360) % 360,
+              rotation: rad2deg(details.rotation),
             );
 
             state = widget.initialState + stateDiff;
@@ -105,7 +106,7 @@ class _LabelWidgetState extends State<_LabelWidget> {
               child: Transform.scale(
                 scale: state.scale,
                 child: Transform.rotate(
-                  angle: state.rotation / 360 * 2 * pi,
+                  angle: deg2rad(state.rotation),
                   child: widget.child,
                 ),
               ),
