@@ -21,6 +21,11 @@ class LabelState {
       rotation: this.rotation + other.rotation,
     );
   }
+
+  @override
+  String toString() {
+    return "LabelState{translation: $translation, scale: $scale, rotation: $rotation}";
+  }
 }
 
 @immutable
@@ -42,4 +47,8 @@ class LabelValue<T> {
 
   @override
   int get hashCode => this.id.hashCode;
+  @override
+  String toString() {
+    return "LabelValue{id: $id, data: $data, state: $state}";
+  }
 }

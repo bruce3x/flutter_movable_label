@@ -77,7 +77,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
 
   void startTouch(LabelValue<T> label) {
     if (moving != null) return;
-    print('Touching ${label.data}');
+    log('Touching ${label.data}');
     moving = label;
     widget.controller.remove(label);
     widget.onMoveStart?.call(moving);
@@ -86,6 +86,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
 
   void finishTouch() {
     if (moving == null) return;
+    log('Finsh touch');
     widget.controller.add(moving);
     widget.onMoveEnd?.call(moving);
     moving = null;
@@ -110,11 +111,10 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onScaleStart: (details) {
-          print('scaleStart: $details');
+          log('scaleStart: $details');
           if (moving == null) return;
           initialState = moving.state;
           initialTouchPosition = details.localFocalPoint;
-          print('Initial touch ... state & pos');
         },
         onScaleUpdate: (details) {
           if (initialTouchPosition == null) return;
@@ -129,10 +129,9 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
           setState(() {});
         },
         onScaleEnd: (details) {
-          print('scaleEnd: $details');
+          log('scaleEnd: $details');
           if (pointerCount == 0) {
             finishTouch();
-            print('Finish touch.. cleanup');
           }
         },
         child: Stack(
