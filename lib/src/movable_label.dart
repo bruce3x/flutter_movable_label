@@ -85,14 +85,12 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
     log('Start touch $label');
     touching = label;
     widget.controller.remove(label);
-    widget.onMoveStart?.call(touching);
     setState(() {});
   }
 
   void finishTouch() {
     if (touching == null) return;
     widget.controller.add(touching);
-    widget.onMoveEnd?.call(touching);
     lastTouched = touching;
     touching = null;
     initialTouchPosition = null;
@@ -115,9 +113,10 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
           if (touching == null) return;
           initialState = touching.state;
           initialTouchPosition = details.localFocalPoint;
+          widget.onMoveStart?.call(touching);
         },
         onScaleUpdate: (details) {
-          if (initialTouchPosition == null) return;
+          if (initialTouchPosition == null || touching == null) return;
 
           LabelState adjustment = LabelState(
             translation: (details.localFocalPoint - initialTouchPosition),
@@ -133,6 +132,9 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
         },
         onScaleEnd: (details) {
           log('scaleEnd: $details');
+          if (lastTouched != null) {
+            widget.onMoveEnd?.call(lastTouched);
+          }
         },
         onTap: () {
           log('onTap');
