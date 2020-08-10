@@ -25,8 +25,9 @@ class LabelCell {
 
 class ColorfulLabel extends StatelessWidget {
   final LabelCell data;
+  final bool active;
 
-  const ColorfulLabel({Key key, this.data}) : super(key: key);
+  const ColorfulLabel({Key key, this.data, this.active = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +35,7 @@ class ColorfulLabel extends StatelessWidget {
       decoration: BoxDecoration(
         color: data.color,
         borderRadius: BorderRadius.all(Radius.circular(8)),
+        border: active ? Border.all(color: Colors.redAccent) : null,
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),

@@ -34,8 +34,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   GlobalKey containerKey = GlobalKey();
 
-  bool moving = false;
+  LabelValue movingLabel;
   bool deleteAvailable = false;
+
+  bool get moving => movingLabel != null;
 
   Widget _header() {
     return Offstage(
@@ -70,9 +72,12 @@ class _MyHomePageState extends State<MyHomePage> {
       color: Colors.indigo,
       child: MovableLabel<LabelCell>(
         controller: labelController,
-        builder: (_, data) => ColorfulLabel(data: data),
+        builder: (_, label) => ColorfulLabel(
+          data: label.data,
+          active: label == movingLabel,
+        ),
         onMoveStart: (label) {
-          moving = true;
+          movingLabel = label;
           setState(() {});
         },
         onMoveUpdate: (state) {
@@ -98,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
 
           deleteAvailable = false;
-          moving = false;
+          movingLabel = null;
           setState(() {});
         },
         onTap: (label) {

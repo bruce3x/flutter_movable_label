@@ -5,7 +5,7 @@ import 'package:flutter_movable_label/src/model.dart';
 import 'package:flutter_movable_label/src/touch.dart';
 import 'package:flutter_movable_label/src/util.dart';
 
-typedef LabelWidgetBuilder<T> = Widget Function(BuildContext context, T data);
+typedef LabelWidgetBuilder<T> = Widget Function(BuildContext context, LabelValue<T> label);
 
 typedef MoveLabelStartCallback<T> = void Function(LabelValue<T> label);
 typedef MoveLabelUpdateCallback = LabelState Function(LabelState state);
@@ -60,7 +60,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
                     onPointerDown: (event) => startTouch(label),
                     child: _LabelWidget(
                       state: label.state,
-                      child: widget.builder(context, label.data),
+                      child: widget.builder(context, label),
                     ),
                   ),
                 )
@@ -76,7 +76,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
 
     return _LabelWidget(
       state: touching.state,
-      child: widget.builder(context, touching.data),
+      child: widget.builder(context, touching),
     );
   }
 
