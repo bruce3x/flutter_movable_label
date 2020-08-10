@@ -95,7 +95,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
     touching = null;
     initialTouchPosition = null;
     initialState = null;
-    log('Finsh touch, cleanup, last touched = $lastTouched');
+    log('Finish touch, cleanup, last touched = $lastTouched');
     setState(() {});
   }
 
