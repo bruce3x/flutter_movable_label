@@ -10,6 +10,8 @@ typedef LabelWidgetBuilder<T> = Widget Function(BuildContext context, T data);
 typedef MoveLabelStartCallback<T> = void Function(LabelValue<T> label);
 typedef MoveLabelUpdateCallback = LabelState Function(LabelState state);
 typedef MoveLabelEndCallback<T> = void Function(LabelValue<T> label);
+typedef LabelOnTapCallback<T> = void Function(LabelValue<T> label);
+typedef LabelOnDoubleTapCallback<T> = void Function(LabelValue<T> label);
 
 class MovableLabel<T> extends StatefulWidget {
   final LabelController<T> controller;
@@ -19,6 +21,9 @@ class MovableLabel<T> extends StatefulWidget {
   final MoveLabelUpdateCallback onMoveUpdate;
   final MoveLabelEndCallback<T> onMoveEnd;
 
+  final LabelOnTapCallback<T> onTap;
+  final LabelOnTapCallback<T> onDoubleTap;
+
   MovableLabel({
     Key key,
     @required this.controller,
@@ -26,6 +31,8 @@ class MovableLabel<T> extends StatefulWidget {
     this.onMoveStart,
     this.onMoveUpdate,
     this.onMoveEnd,
+    this.onTap,
+    this.onDoubleTap,
   }) : super(key: key) {
     assert(controller != null);
     assert(builder != null);
@@ -36,11 +43,10 @@ class MovableLabel<T> extends StatefulWidget {
 }
 
 class _MovableLabelState<T> extends State<MovableLabel<T>> {
-  LabelValue<T> moving;
+  LabelValue<T> lastTouched;
+  LabelValue<T> touching;
   LabelState initialState;
   Offset initialTouchPosition;
-
-  int pointerCount = 0;
 
   Widget _labels() {
     return ClipRect(
@@ -66,65 +72,78 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
   }
 
   Widget _activeLabel() {
-    if (moving == null) return SizedBox.shrink();
+    if (touching == null) return SizedBox.shrink();
 
     return _LabelWidget(
-      state: moving.state,
-      child: widget.builder(context, moving.data),
+      state: touching.state,
+      child: widget.builder(context, touching.data),
     );
   }
 
   void startTouch(LabelValue<T> label) {
-    if (moving != null) return;
-    log('Touching ${label.data}');
-    moving = label;
+    if (touching != null) return;
+    log('Start touch $label');
+    touching = label;
     widget.controller.remove(label);
-    widget.onMoveStart?.call(moving);
+    widget.onMoveStart?.call(touching);
     setState(() {});
   }
 
   void finishTouch() {
-    if (moving == null) return;
-    log('Finsh touch');
-    widget.controller.add(moving);
-    widget.onMoveEnd?.call(moving);
-    moving = null;
+    if (touching == null) return;
+    widget.controller.add(touching);
+    widget.onMoveEnd?.call(touching);
+    lastTouched = touching;
+    touching = null;
+    initialTouchPosition = null;
+    initialState = null;
+    log('Finsh touch, cleanup, last touched = $lastTouched');
     setState(() {});
-  }
-
-  LabelState nextState(LabelState adjust) {
-    final nextState = initialState + adjust;
-    return widget.onMoveUpdate?.call(nextState) ?? nextState;
   }
 
   @override
   Widget build(BuildContext context) {
     return TouchPointerCounter(
-      onChange: (count) => pointerCount = count,
+      onChange: (count) {
+        log('pointerCount => $count');
+        if (count == 0) finishTouch();
+      },
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onScaleStart: (details) {
           log('scaleStart: $details');
-          if (moving == null) return;
-          initialState = moving.state;
+          if (touching == null) return;
+          initialState = touching.state;
           initialTouchPosition = details.localFocalPoint;
         },
         onScaleUpdate: (details) {
           if (initialTouchPosition == null) return;
 
-          LabelState adjust = LabelState(
+          LabelState adjustment = LabelState(
             translation: (details.localFocalPoint - initialTouchPosition),
             scale: details.scale,
             rotation: rad2deg(details.rotation),
           );
 
-          moving = moving.copyWith(state: nextState(adjust));
+          LabelState nextState = initialState + adjustment;
+          nextState = widget.onMoveUpdate?.call(nextState) ?? nextState;
+
+          touching = touching.copyWith(state: nextState);
           setState(() {});
         },
         onScaleEnd: (details) {
           log('scaleEnd: $details');
-          if (pointerCount == 0) {
-            finishTouch();
+        },
+        onTap: () {
+          log('onTap');
+          if (lastTouched != null) {
+            widget.onTap?.call(lastTouched);
+          }
+        },
+        onDoubleTap: () {
+          log('onDoubleTap');
+          if (lastTouched != null) {
+            widget.onDoubleTap?.call(lastTouched);
           }
         },
         child: Stack(

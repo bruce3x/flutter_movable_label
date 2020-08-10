@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movable_label/flutter_movable_label.dart';
 import 'package:movable_label_example/colorful_label.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:uuid/uuid.dart';
 
 void main() {
@@ -10,13 +11,15 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MovableLabel Example',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return OKToast(
+      child: MaterialApp(
+        title: 'MovableLabel Example',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: MyHomePage(),
       ),
-      home: MyHomePage(),
     );
   }
 }
@@ -61,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _labels() {
+  Widget _labels(BuildContext context) {
     return Container(
       key: containerKey,
       color: Colors.indigo,
@@ -89,11 +92,20 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
         onMoveEnd: (label) {
-          if (deleteAvailable) labelController.remove(label);
+          if (deleteAvailable) {
+            labelController.remove(label);
+            showToast('Delete: ${label.data.text}');
+          }
 
           deleteAvailable = false;
           moving = false;
           setState(() {});
+        },
+        onTap: (label) {
+          showToast('Tap: ${label.data.text}');
+        },
+        onDoubleTap: (label) {
+          showToast('DoubleTap: ${label.data.text}');
         },
       ),
     );
@@ -112,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(child: _deleteArea()),
           AspectRatio(
             aspectRatio: 1,
-            child: _labels(),
+            child: _labels(context),
           ),
           Expanded(child: _header()),
         ],
