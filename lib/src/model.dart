@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/material.dart';
 
 part 'model.g.dart';
 
@@ -47,6 +47,7 @@ class LabelValue<T> {
 
   @override
   int get hashCode => this.id.hashCode;
+
   @override
   String toString() {
     return "LabelValue{id: $id, data: $data, state: $state}";

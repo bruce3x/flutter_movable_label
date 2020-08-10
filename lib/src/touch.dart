@@ -16,6 +16,7 @@ class TouchPointerCounter extends StatefulWidget {
 
 class _TouchPointerCounterState extends State<TouchPointerCounter> {
   final pointers = Set<int>();
+
   @override
   Widget build(BuildContext context) {
     return Listener(
