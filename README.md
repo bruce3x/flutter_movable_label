@@ -1,6 +1,8 @@
 # flutter_movable_label
 
-A interactive flutter widget to show labels.
+An interactive flutter widget to show labels.
+
+![screenshot](./art/screenshot.gif)
 
 ## Installation
 

@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
       offstage: moving,
       child: Center(
         child: Text(
-          'Dismiss header whiling moving label',
+          'Dismiss header while moving label',
           style: Theme.of(context).textTheme.headline5,
         ),
       ),
