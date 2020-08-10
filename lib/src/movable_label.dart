@@ -8,7 +8,7 @@ import 'package:flutter_movable_label/src/util.dart';
 typedef LabelWidgetBuilder<T> = Widget Function(BuildContext context, T data);
 
 typedef MoveLabelStartCallback<T> = void Function(LabelValue<T> label);
-typedef MoveLabelUpdateCallback = LabelState Function(LabelState state, Rect containerBox);
+typedef MoveLabelUpdateCallback = LabelState Function(LabelState state);
 typedef MoveLabelEndCallback<T> = void Function(LabelValue<T> label);
 
 class MovableLabel<T> extends StatefulWidget {
@@ -36,7 +36,6 @@ class MovableLabel<T> extends StatefulWidget {
 }
 
 class _MovableLabelState<T> extends State<MovableLabel<T>> {
-  GlobalKey containerKey = GlobalKey();
   LabelValue<T> moving;
   LabelState initialState;
   Offset initialTouchPosition;
@@ -94,14 +93,8 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
   }
 
   LabelState nextState(LabelState adjust) {
-    final state = initialState + adjust;
-    if (widget.onMoveUpdate == null) return state;
-
-    final box = containerKey.currentContext.findRenderObject() as RenderBox;
-    final translation = box.getTransformTo(null).getTranslation();
-    final rect = Rect.fromLTWH(translation.x, translation.y, box.size.width, box.size.height);
-
-    return widget.onMoveUpdate(initialState + adjust, rect);
+    final nextState = initialState + adjust;
+    return widget.onMoveUpdate?.call(nextState) ?? nextState;
   }
 
   @override
@@ -135,7 +128,6 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
           }
         },
         child: Stack(
-          key: containerKey,
           children: [
             _labels(),
             _activeLabel(),

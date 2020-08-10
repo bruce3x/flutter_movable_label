@@ -29,6 +29,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   LabelController<LabelCell> labelController = LabelController();
 
+  GlobalKey containerKey = GlobalKey();
+
   bool moving = false;
   bool deleteAvailable = false;
 
@@ -61,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _labels() {
     return Container(
+      key: containerKey,
       color: Colors.indigo,
       child: MovableLabel<LabelCell>(
         controller: labelController,
@@ -69,14 +72,17 @@ class _MyHomePageState extends State<MyHomePage> {
           moving = true;
           setState(() {});
         },
-        onMoveUpdate: (state, box) {
-          deleteAvailable = state.translation.dy > box.height / 2;
+        onMoveUpdate: (state) {
+          final box = containerKey.currentContext.findRenderObject() as RenderBox;
+          final size = box.size;
+
+          deleteAvailable = state.translation.dy > size.height / 2;
           setState(() {});
 
           return LabelState(
             translation: Offset(
-              state.translation.dx.clamp(-box.width / 2, box.width / 2),
-              state.translation.dy.clamp(-box.height / 2, double.infinity),
+              state.translation.dx.clamp(-size.width / 2, size.width / 2),
+              state.translation.dy.clamp(-size.height / 2, double.infinity),
             ),
             scale: state.scale.clamp(0.2, 3.0),
             rotation: (state.rotation + 360) % 360,
