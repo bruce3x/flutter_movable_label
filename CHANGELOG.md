@@ -1,4 +1,4 @@
-## [1.0.1]
+## [1.0.1] - 2020.08.14
 
 * New: provide a label decoration `ArrowDecoration`.
 * Fix: onTap callback issue
