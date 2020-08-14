@@ -1,6 +1,7 @@
 ## [1.0.1]
 
-* New label decoration `ArrowDecoration`.
+* New: provide a label decoration `ArrowDecoration`.
+* Fix: onTap callback issue
 
 
 ## [1.0.0] - 2020.08.10

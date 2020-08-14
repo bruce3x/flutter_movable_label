@@ -89,8 +89,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
   }
 
   void finishTouch() {
-    if (touching == null) return;
-    widget.controller.add(touching);
+    if (touching != null) widget.controller.add(touching);
     lastTouched = touching;
     touching = null;
     initialTouchPosition = null;
