@@ -10,7 +10,7 @@ Add library dependency to your `pubspec.yaml`.
 
 ```yaml
 dependencies:
-  flutter_movable_label: ^1.0.1
+  flutter_movable_label: ^1.0.2
 ```
 
 ## Import
