@@ -7,22 +7,19 @@ import 'package:flutter_movable_label/src/util.dart';
 
 typedef LabelWidgetBuilder<T> = Widget Function(BuildContext context, LabelValue<T> label);
 
-typedef MoveLabelStartCallback<T> = void Function(LabelValue<T> label);
+typedef LabelCallback<T> = void Function(LabelValue<T> label);
 typedef MoveLabelUpdateCallback = LabelState Function(LabelState state);
-typedef MoveLabelEndCallback<T> = void Function(LabelValue<T> label);
-typedef LabelOnTapCallback<T> = void Function(LabelValue<T> label);
-typedef LabelOnDoubleTapCallback<T> = void Function(LabelValue<T> label);
 
 class MovableLabel<T> extends StatefulWidget {
   final LabelController<T> controller;
   final LabelWidgetBuilder<T> builder;
 
-  final MoveLabelStartCallback<T> onMoveStart;
+  final LabelCallback<T> onMoveStart;
   final MoveLabelUpdateCallback onMoveUpdate;
-  final MoveLabelEndCallback<T> onMoveEnd;
+  final LabelCallback<T> onMoveEnd;
 
-  final LabelOnTapCallback<T> onTap;
-  final LabelOnTapCallback<T> onDoubleTap;
+  final LabelCallback<T> onTap;
+  final LabelCallback<T> onDoubleTap;
 
   MovableLabel({
     Key key,
@@ -137,15 +134,11 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
         },
         onTap: () {
           log('onTap');
-          if (lastTouched != null) {
-            widget.onTap?.call(lastTouched);
-          }
+          widget.onTap?.call(lastTouched);
         },
         onDoubleTap: () {
           log('onDoubleTap');
-          if (lastTouched != null) {
-            widget.onDoubleTap?.call(lastTouched);
-          }
+          widget.onDoubleTap?.call(lastTouched);
         },
         child: Stack(
           children: [

@@ -107,10 +107,18 @@ class _MyHomePageState extends State<MyHomePage> {
           setState(() {});
         },
         onTap: (label) {
-          showToast('Tap: ${label.data.text}');
+          if (label == null) {
+            showToast("Tap empty area");
+          } else {
+            showToast('Tap: ${label.data.text}');
+          }
         },
         onDoubleTap: (label) {
-          showToast('DoubleTap: ${label.data.text}');
+          if (label == null) {
+            showToast("Double tap empty area");
+          } else {
+            showToast('DoubleTap: ${label.data.text}');
+          }
         },
       ),
     );

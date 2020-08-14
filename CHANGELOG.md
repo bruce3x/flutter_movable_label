@@ -1,6 +1,11 @@
+## [1.0.2]
+
+* New: Support tap at empty area.
+
+
 ## [1.0.1] - 2020.08.14
 
-* New: provide a label decoration `ArrowDecoration`.
+* New: provide `ArrowDecoration`.
 * Fix: onTap callback issue
 
 
