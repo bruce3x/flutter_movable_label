@@ -54,7 +54,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
             children: value
                 .map(
                   (label) => Listener(
-                    onPointerDown: (event) => startTouch(label),
+                    onPointerDown: (event) => _startTouch(label),
                     child: _LabelWidget(
                       state: label.state,
                       child: widget.builder(context, label),
@@ -77,7 +77,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
     );
   }
 
-  void startTouch(LabelValue<T> label) {
+  void _startTouch(LabelValue<T> label) {
     if (touching != null) return;
     log('Start touch $label');
     touching = label;
@@ -85,7 +85,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
     setState(() {});
   }
 
-  void finishTouch() {
+  void _finishTouch() {
     if (touching != null) widget.controller.add(touching);
     lastTouched = touching;
     touching = null;
@@ -100,7 +100,7 @@ class _MovableLabelState<T> extends State<MovableLabel<T>> {
     return TouchPointerCounter(
       onChange: (count) {
         log('pointerCount => $count');
-        if (count == 0) finishTouch();
+        if (count == 0) _finishTouch();
       },
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
