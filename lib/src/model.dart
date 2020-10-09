@@ -1,8 +1,6 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 
-part 'model.g.dart';
-
 @immutable
 @CopyWith()
 class LabelState {
@@ -22,6 +20,14 @@ class LabelState {
     );
   }
 
+  LabelState copyWith({double rotation, double scale, Offset translation}) {
+    return LabelState(
+      rotation: rotation ?? this.rotation,
+      scale: scale ?? this.scale,
+      translation: translation ?? this.translation,
+    );
+  }
+
   @override
   String toString() {
     return "LabelState{translation: $translation, scale: $scale, rotation: $rotation}";
@@ -38,6 +44,14 @@ class LabelValue<T> {
   LabelValue({@required this.id, @required this.data, this.state = LabelState.zero}) {
     assert(id != null);
     assert(data != null);
+  }
+
+  LabelValue<T> copyWith({T data, LabelState state}) {
+    return LabelValue<T>(
+      id: id,
+      data: data ?? this.data,
+      state: state ?? this.state,
+    );
   }
 
   @override
