@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  copy_with_extension: ^1.2.0
 
 dev_dependencies:
   flutter_test:

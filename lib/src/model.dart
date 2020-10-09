@@ -1,8 +1,6 @@
-import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 
 @immutable
-@CopyWith()
 class LabelState {
   final Offset translation;
   final double scale;
@@ -35,7 +33,6 @@ class LabelState {
 }
 
 @immutable
-@CopyWith()
 class LabelValue<T> {
   final String id;
   final T data;
