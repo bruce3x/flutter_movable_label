@@ -1,4 +1,4 @@
-## [1.0.3] - 2020.10.09
+## [1.0.4] - 2020.10.09
 
 * Fix: Remove `copy_with_extension_gen` dependency
 

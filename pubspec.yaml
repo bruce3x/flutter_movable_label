@@ -1,6 +1,6 @@
 name: flutter_movable_label
 description: A interactive flutter widget to show labels. Support roration / scale / translation and other features.
-version: 1.0.3
+version: 1.0.4
 homepage: https://github.com/bruce3x/flutter_movable_label
 
 environment:
